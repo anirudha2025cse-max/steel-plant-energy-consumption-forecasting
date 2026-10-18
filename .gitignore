@@ -1,0 +1,13 @@
+# Local organizer data (not needed for inference)
+train.csv
+test.csv
+*.zip
+
+# Python / notebook temporary files
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+.venv/
+venv/
+.DS_Store
