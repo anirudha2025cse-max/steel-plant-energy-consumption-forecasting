@@ -9,12 +9,12 @@ Predict **`next_interval_Usage_kWh`** using current plant telemetry and previous
 ## Exploratory analysis & data quality
 
 - The training data contained **no missing values or exact duplicate rows** in the initial audit.
-- Electricity usage is strongly right-skewed (**mean approximately 27.93 kWh; median approximately 4.61 kWh**), making large errors during high-demand periods particularly important for RMSE.
+- Electricity usage is strongly right-skewed (**mean approximately 27.92 kWh; median approximately 4.61 kWh**), making large errors during high-demand periods particularly important for RMSE.
 - The raw date field contains midnight labeling irregularities, so we preserve the supplied observation order for temporal splitting and use NSM to encode time of day.
 
 ## Feature engineering & modeling
 
-Our model combines present operating conditions with historical consumption patterns. Original inputs include current Usage_kWh, lagging and leading reactive power, CO2, both power factors, NSM, weekday/weekend indicators and load type. Calendar and cyclical time-of-day features help represent recurring operating patterns without treating midnight as a discontinuity.
+Our model combines current plant telemetry with historical electricity consumption to forecast usage for the next 15-minute interval. The telemetry inputs used are Usage_kWh, lagging and leading reactive power, CO2, both power factors and NSM. Calendar features, including day of the week and a weekend indicator, are derived from timestamps constructed using date and NSM, rather than the supplied Day_of_week and WeekStatus columns. Cyclical sine and cosine features represent time-of-day and weekly patterns, preserving continuity across midnight and week boundaries. Load_Type is excluded from the model's feature set. All engineered features use only information available at or before the current observation.
 
 Causal usage lags are constructed at **1, 2, 3, 4, 8, 12, 24, 48, 96, 192 and 672 intervals**. Rolling usage means and standard deviations over **4, 8, 24 and 96 intervals** summarize recent demand levels and variability; a one-step usage-change feature captures short-term movement. Each feature uses only measurements available at or before the prediction timestamp, never the future target.
 
